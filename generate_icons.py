@@ -15,7 +15,12 @@ def create_icon(size, text, filename):
     border_width = max(1, size // 20)
     
     # Draw the circular background
-    draw.ellipse([(margin, margin), (size - margin, size - margin)], fill=circle_color, outline=border_color, width=border_width)
+    draw.ellipse(
+        [(margin, margin), (size - margin, size - margin)],
+        fill=circle_color,
+        outline=border_color,
+        width=border_width
+    )
     
     # Try to use a nice TrueType font; fallback to default if not available
     try:
@@ -25,8 +30,10 @@ def create_icon(size, text, filename):
         print("TrueType font not found. Using default font. Error:", e)
         font = ImageFont.load_default()
     
-    # Calculate the position to center the text
-    text_width, text_height = draw.textsize(text, font=font)
+    # Calculate the position to center the text using textbbox (Pillow 10.4.0+)
+    bbox = draw.textbbox((0, 0), text, font=font)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
     text_position = ((size - text_width) / 2, (size - text_height) / 2)
     
     # Draw the text (initials) on the icon
